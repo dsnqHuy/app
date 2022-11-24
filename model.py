@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 import datetime
+import sklearn
 from sklearn.preprocessing import MinMaxScaler
 from xgboost import XGBRegressor
-from math import sqrt
 
 def my_model(data, time_step, num_day_shown):
    #Scale the data

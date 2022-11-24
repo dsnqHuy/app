@@ -1,7 +1,7 @@
 import dash
 import dash_bootstrap_components as dbc
-import webbrowser
-import os
+# import webbrowser
+# import os
 import data_collection
 from dash import html, dcc
 from dash.dependencies import Input, Output
@@ -15,6 +15,7 @@ past_df = df
 
 #Create a dash application
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CERULEAN])
+server = app.server
 
 #Create app layout
 CONTENT_STYLE = {
@@ -96,11 +97,11 @@ def overall_stats_plot(value):
     else:
         return acf_pacf_plot(past_data= past_df, plot_pacf= False), acf_pacf_plot(past_data= past_df, plot_pacf= True) 
 
-def open_browser():
-    if not os.environ.get("WERKZEUG_RUN_MAIN"):
-        webbrowser.open_new('http://127.0.0.1:8050/')
+# def open_browser():
+#     if not os.environ.get("WERKZEUG_RUN_MAIN"):
+#         webbrowser.open_new('http://127.0.0.1:8050/')
 
 # Run the app
 if __name__ == '__main__':
-    Timer(0.5, open_browser).start()
-    app.run_server(debug=True)
+    # Timer(0.5, open_browser).start()
+    app.run_server(debug=True, port= 5555)
