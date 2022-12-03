@@ -1,12 +1,10 @@
 import dash
 import dash_bootstrap_components as dbc
 # import webbrowser
-# import os
-import data_collection
+from assets import data_collection
 from dash import html, dcc
 from dash.dependencies import Input, Output
-from threading import Timer
-from visualization import trend_plot, box_plot, prediction_plot, acf_pacf_plot
+from assets.visualization import trend_plot, box_plot, prediction_plot, acf_pacf_plot
 
 #Load the data
 raw_data = data_collection.get_raw_data()
@@ -15,7 +13,6 @@ past_df = df
 
 #Create a dash application
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CERULEAN])
-server = app.server
 
 #Create app layout
 CONTENT_STYLE = {
@@ -30,8 +27,8 @@ app.layout = dbc.Container(children=[html.H1('Bitcoin Price Dashboard',
                                             }),
                                     html.Br(),
                                     dcc.Dropdown(options= [
-                                           {'label': 'Overall', 'value': 'overall'},
-                                           {'label': 'Statistic', 'value': 'statistic'}
+                                            {'label': 'Overall', 'value': 'overall'},
+                                            {'label': 'Statistic', 'value': 'statistic'}
                                         ],
                                         value= 'overall',
                                         id= 'overall_or_stats',
@@ -59,15 +56,15 @@ app.layout = dbc.Container(children=[html.H1('Bitcoin Price Dashboard',
                                             'color':'#503D36', 
                                             'font-size':'50'}),
                                     dcc.Slider(id= 'time_step_slider',
-                                            min= 1, max=30, step= 1,
-                                            value= 12
+                                            min= 1, max= 15, step= 1,
+                                            value= 7
                                             ),
                                 	dbc.Row(dbc.Card(dbc.CardBody(dcc.Graph(id= "prediction_chart")))),
                                     dcc.RadioItems([
                                             {'label': 'Choose number of days to display:', 'value': 180, 'disabled': True},
-                                            {'label': 'Show valid and future', 'value': 89},
-                                            {'label': 'Show future only', 'value': 14},
-                                            {'label': 'Show all', 'value': 365 + 14}
+                                            {'label': 'Show valid and future', 'value': 90},
+                                            {'label': 'Show future only', 'value': 15},
+                                            {'label': 'Show all', 'value': 365 + 15}
                                             ],
                                         labelStyle= {"max-width": "3100px", "width": "25%"},
                                         id= "num_day_show"
@@ -75,16 +72,7 @@ app.layout = dbc.Container(children=[html.H1('Bitcoin Price Dashboard',
                                 	],
                            style= dict(CONTENT_STYLE, justifyContent='center')
                            )
-
-@app.callback(
-    [Output(component_id= "prediction_chart", component_property= "figure"),
-     Input(component_id= 'num_day_show', component_property= 'value'),
-     Input(component_id= "time_step_slider", component_property= 'value')]
-)
-
-def display_pred_chart(num_day, time_step):
-    return prediction_plot(time_step= time_step, num_day_shown= num_day, data= df)
-
+                           
 @app.callback(
     [Output(component_id= 'trend_or_acf', component_property= 'figure'),
     Output(component_id= 'box_or_pacf', component_property= 'figure'),
@@ -97,6 +85,16 @@ def overall_stats_plot(value):
     else:
         return acf_pacf_plot(past_data= past_df, plot_pacf= False), acf_pacf_plot(past_data= past_df, plot_pacf= True) 
 
+@app.callback(
+    [Output(component_id= "prediction_chart", component_property= "figure"),
+     Input(component_id= 'num_day_show', component_property= 'value'),
+     Input(component_id= "time_step_slider", component_property= 'value')]
+)
+
+def display_pred_chart(num_day, time_step):
+    return prediction_plot(time_step= time_step, num_day_shown= num_day, data= df)
+
+
 # def open_browser():
 #     if not os.environ.get("WERKZEUG_RUN_MAIN"):
 #         webbrowser.open_new('http://127.0.0.1:8050/')
@@ -104,4 +102,4 @@ def overall_stats_plot(value):
 # Run the app
 if __name__ == '__main__':
     # Timer(0.5, open_browser).start()
-    app.run_server(debug=True, port= 5555)
+    app.run_server(debug= False, host= '0.0.0.0', port= 8080)

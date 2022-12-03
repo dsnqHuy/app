@@ -43,10 +43,10 @@ def my_model(data, time_step, num_day_shown):
    data['valid_pred'] = np.nan
    data['valid_pred'].iloc[close_data.shape[0] - len(valid_pred):close_data.shape[0]] = valid_pred
    
-   #Predict next 14 days price
+   #Predict next 15 days price
    future_pred = np.empty(shape= (1, 0))
-   X_init= close_data[close_data.shape[0] - time_step:close_data.shape[0], :].reshape(1, -1)
-   num_day_pred = 14
+   X_init = close_data[close_data.shape[0] - time_step:close_data.shape[0], :].reshape(1, -1)
+   num_day_pred = 15
    while num_day_pred > 0:
       next_day = model.predict(X_init)
       X_init = X_init[:, 1:time_step].reshape(1, -1)
@@ -64,7 +64,7 @@ def my_model(data, time_step, num_day_shown):
    last_date = str(data['date'].iloc[-1])[:10]
    last_date = datetime.datetime.strptime(last_date, "%Y-%m-%d")
    date_list = []
-   for i in range(1, 14 + 1):
+   for i in range(1, 15 + 1):
       date_list.append((last_date + datetime.timedelta(days= i)).strftime("%Y-%m-%d"))
    new = {'date': date_list}
    data = data.append(pd.DataFrame(new))

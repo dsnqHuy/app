@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 import pandas as pd
 import plotly.express as px
-import model
+from assets import model
 import numpy as np
 from datetime import date
 from statsmodels.tsa.stattools import acf, pacf
@@ -37,17 +37,17 @@ def acf_pacf_plot(past_data, plot_pacf):
                   fill='tonexty', line_color='rgba(255,255,255,0)')
    fig.update_traces(showlegend=False)
    title='Partial Autocorrelation (PACF)' if plot_pacf else 'Autocorrelation (ACF)'
-   fig.update_layout(title=title, paper_bgcolor= "LightSteelBlue")
+   fig.update_layout(title=title, paper_bgcolor= "LightSteelBlue", xaxis_title= "Lag", yaxis_title= "PACF" if plot_pacf else "ACF" )
    
    return fig
 
 def prediction_plot(time_step, num_day_shown, data):
-   if num_day_shown != 89 and num_day_shown != 14:
-      num_day_shown = 365 + 14
+   if num_day_shown != 90 and num_day_shown != 15:
+      num_day_shown = 365 + 15
    modeled_data = model.my_model(data= data, num_day_shown=num_day_shown, time_step= time_step)
    trace = go.Figure()
    trace.add_scatter(x= modeled_data['date'], y= modeled_data['close'], name= 'actual')
    trace.add_scatter(x= modeled_data['date'], y= modeled_data['valid_pred'], name= 'valid prediction')
-   trace.add_scatter(x= modeled_data['date'], y= modeled_data['future_pred'], name= 'prediction for 14 days next')
-   trace.update_layout(title= 'Prediction for next 2 weeks', height= 400, template='ggplot2', xaxis_title= "Day", yaxis_title= "Price", paper_bgcolor="LightSteelBlue")
+   trace.add_scatter(x= modeled_data['date'], y= modeled_data['future_pred'], name= 'prediction for next 15 days')
+   trace.update_layout(title= 'Prediction for next 15 days', height= 400, template='ggplot2', xaxis_title= "Day", yaxis_title= "Price", paper_bgcolor="LightSteelBlue")
    return [go.Figure(data= trace)]
