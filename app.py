@@ -13,6 +13,7 @@ past_df = df
 
 #Create a dash application
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CERULEAN])
+server = app.server
 
 #Create app layout
 CONTENT_STYLE = {
@@ -57,12 +58,12 @@ app.layout = dbc.Container(children=[html.H1('Bitcoin Price Dashboard',
                                             'font-size':'50'}),
                                     dcc.Slider(id= 'time_step_slider',
                                             min= 1, max= 15, step= 1,
-                                            value= 7
+                                            value= 8
                                             ),
                                 	dbc.Row(dbc.Card(dbc.CardBody(dcc.Graph(id= "prediction_chart")))),
                                     dcc.RadioItems([
                                             {'label': 'Choose number of days to display:', 'value': 180, 'disabled': True},
-                                            {'label': 'Show valid and future', 'value': 90},
+                                            {'label': 'Show valid and future', 'value': 73 + 15},
                                             {'label': 'Show future only', 'value': 15},
                                             {'label': 'Show all', 'value': 365 + 15}
                                             ],
@@ -102,4 +103,4 @@ def display_pred_chart(num_day, time_step):
 # Run the app
 if __name__ == '__main__':
     # Timer(0.5, open_browser).start()
-    app.run_server(debug= False, host= '0.0.0.0', port= 8080)
+    app.run_server(debug= True)

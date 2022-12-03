@@ -3,7 +3,9 @@ import numpy as np
 import datetime
 import sklearn
 from sklearn.preprocessing import MinMaxScaler
-from xgboost import XGBRegressor
+from sklearn.svm import SVR
+from sklearn.metrics import mean_squared_error, mean_absolute_error, explained_variance_score, r2_score 
+from math import sqrt
 
 def my_model(data, time_step, num_day_shown):
    #Scale the data
@@ -13,27 +15,34 @@ def my_model(data, time_step, num_day_shown):
    #Split train and valid set
    train_size = int(close_data.shape[0] * 0.8)
    train_data, valid_data = close_data[0:train_size, :], close_data[train_size:close_data.shape[0],]
-
    #Create train and valid set for modeling
    X_train, y_train = [], []
-   for i in range(len(train_data)-time_step-1):
+   for i in range(len(train_data)- time_step - 1):
       a = train_data[i:(i+time_step), 0]  
       X_train.append(a)
       y_train.append(train_data[i + time_step, 0])
    
    X_valid, y_valid = [], []
-   for i in range(len(close_data)-time_step- 3 - len(valid_data), len(close_data) - time_step - 1):
-      a = close_data[i:(i+time_step), 0]  
+   for i in range(len(close_data) - len(valid_data) - time_step, len(close_data) - time_step):
+      a = close_data[i:(i+time_step), 0]
       X_valid.append(a)
       y_valid.append(close_data[i + time_step, 0])
 
    #Model
-   model = XGBRegressor(n_estimators= 1000)
-   model.fit(X_train, y_train, verbose=False)
+   model = SVR(kernel= 'rbf', C= 1e2, gamma= 0.1)
+   model.fit(X_train, y_train)
 
+   print(len(X_valid))
    #Predict X_valid
    valid_pred = model.predict(X_valid)
    
+   #Evaluate
+   rmse = round(sqrt(mean_squared_error(valid_data, valid_pred)), 2)
+   mse = round(mean_squared_error(valid_data, valid_pred), 2)
+   mae = round(mean_absolute_error(valid_data, valid_pred), 2)
+   evs = round(explained_variance_score(valid_data, valid_pred), 2)
+   r2s = round(r2_score(valid_data, valid_pred), 2)
+
    #Inverse transform
    valid_pred = valid_pred.reshape(-1, 1)
    valid_pred = scaler.inverse_transform(valid_pred)
@@ -74,6 +83,7 @@ def my_model(data, time_step, num_day_shown):
    data['future_pred'].iloc[close_data.shape[0]:data.shape[0]] = future_pred
    
    #Slice dataset
+   data.to_csv('data.csv', index= False)
    data = data.iloc[data.shape[0] - num_day_shown:data.shape[0]]
    
-   return data
+   return data, rmse, mse, mae, evs, r2s
