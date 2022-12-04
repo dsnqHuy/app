@@ -38,7 +38,6 @@ def my_model(data, time_step, num_day_shown):
    
    #Evaluate
    rmse = round(sqrt(mean_squared_error(valid_data, valid_pred)), 2)
-   mse = round(mean_squared_error(valid_data, valid_pred), 2)
    mae = round(mean_absolute_error(valid_data, valid_pred), 2)
    evs = round(explained_variance_score(valid_data, valid_pred), 2)
    r2s = round(r2_score(valid_data, valid_pred), 2)
@@ -86,4 +85,4 @@ def my_model(data, time_step, num_day_shown):
    data.to_csv('data.csv', index= False)
    data = data.iloc[data.shape[0] - num_day_shown:data.shape[0]]
    
-   return data, rmse, mse, mae, evs, r2s
+   return data, rmse, mae, evs, r2s
