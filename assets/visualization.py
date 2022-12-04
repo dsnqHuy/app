@@ -47,7 +47,7 @@ def prediction_plot(time_step, num_day_shown, data):
    modeled_data, rmse, mse, mae, evs, r2s = model.my_model(data= data, num_day_shown=num_day_shown, time_step= time_step)
    trace = go.Figure()
    trace.add_scatter(x= modeled_data['date'], y= modeled_data['close'], name= 'Actual')
-   trace.add_scatter(x= modeled_data['date'], y= modeled_data['valid_pred'], name= f'Valid prediction<br>Root mean square error: {rmse}<br>Mean square error: {mse}<br>Mean absolute error: {mae}<br>Explained variance score: {evs}<br>R2 score: {r2s}')
+   trace.add_scatter(x= modeled_data['date'], y= modeled_data['valid_pred'], name= f'Valid prediction<br>Root mean square error: {rmse}<br>Mean square error: {mse}<br>Explained variance score: {evs}<br>R2 score: {r2s}')
    trace.add_scatter(x= modeled_data['date'], y= modeled_data['future_pred'], name= 'Prediction for next 15 days')
    trace.update_layout(title= 'Prediction for next 15 days', height= 400, template='ggplot2', xaxis_title= "Day", yaxis_title= "Price", paper_bgcolor="LightSteelBlue")
    return [go.Figure(data= trace)]
